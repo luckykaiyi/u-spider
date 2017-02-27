@@ -1,0 +1,17 @@
+{
+  "name": "u-spider",
+  "version": "1.0.0",
+  "description": "spider for infor-u-mation",
+  "main": "index.js",
+  "dependencies": {
+    "feed-read": "0.0.1",
+    "iconv-lite": "^0.4.15",
+    "mysql": "^2.13.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "luckykaiyi",
+  "license": "ISC"
+}
