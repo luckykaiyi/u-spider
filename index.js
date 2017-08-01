@@ -18,6 +18,8 @@ var connection = mysql.createConnection(
 var spider = {
     init: function() {
         this.runTask();
+        this.updateCtrl = setInterval(this.runTask.bind(this), 24*3600*1000);
+        this.clearCtrl = setInterval(this.runClear.bind(this), 7*24*3600*1000); 
     },
     tasks: {
         'byr': [
@@ -38,6 +40,7 @@ var spider = {
     },
     runTask: function() {
         var self = this;
+        console.log('runtask--', new Date());
         var httpModule, options, taskUrl, urlData;
         for(var i in self.tasks) {
             for(var j = 0; j < self.tasks[i].length; j++) {
@@ -69,10 +72,9 @@ var spider = {
                if (!jobs) {
                    return false;
                }
-               var title, topic;
                for(var i = 0; i < jobs.length; i++) {
-                   title = jobs[i].title;
-                   topic = jobs[i].topic;
+                   var title = jobs[i].title;
+                   var topic = jobs[i].topic;
                    jobs[i].source = source;
                    self.matchTopic(title, topic, topics);
                }
@@ -121,6 +123,25 @@ var spider = {
                 doSql(jobid, topicsArr, addJob_Params);
             }
         }
+    },
+    runClear: function() {
+      console.log('runClear', new Date());
+      var delSql = 'delete from jobs where create_time < date_sub(now(),interval 7 day)';
+      connection.query(delSql, function(err, result) {
+        if(err) {
+          console.log('del jobs err', err);
+        } else {
+          delSql = 'delete from jobs_topic where create_time < date_sub(now(),interval 7 day)';
+          connection.query(delSql, function(err, result) {
+            if(err) {
+              console.log('del jobs_topic err', err);
+            } else {
+              console.log('----delete-done----');
+              console.log('affectedRows: ',result.affectedRows);
+            }
+          })
+        }
+      })
     }
 }
 spider.init();
